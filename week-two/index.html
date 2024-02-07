@@ -6,6 +6,12 @@
 <body>
     
     <canvas id="c"></canvas>
-    <script src="3d.js" type="module"></script>
+    <script src="primitive.js" type="module"></script>
+    <script  type="importmap">{
+        "imports": {
+            "three": "https://threejs.org/build/three.module.js",
+            "three/addons/": "https://threejs.org/examples/jsm/"
+        }
+    }</script>
 </body>
 </html>
