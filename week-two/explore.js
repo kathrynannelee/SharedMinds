@@ -3,6 +3,7 @@ import { OrbitControls } from 'https://unpkg.com/three@0.126.1/examples/jsm/cont
 //for more modern version of orbit control user importmap https://stackoverflow.com/questions/75250424/threejs-orbitcontrol-import-version-from-cdn
 
 const inputBox = document.createElement('input');
+const canvas = document.getElementById('myCanvas');
 inputBox.setAttribute('type', 'text');
 inputBox.setAttribute('id', 'inputBox');
 inputBox.setAttribute('placeholder', 'Enter thoughts here!');
