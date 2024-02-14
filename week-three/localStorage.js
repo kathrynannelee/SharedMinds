@@ -171,7 +171,7 @@ function createNewImage(img, posInWorld, name) {
     let fontSize = Math.max(12);
     context.font = fontSize + "pt Arial";
     context.textAlign = "center";
-    context.fillStyle = "red";
+    context.fillStyle = "blue";
     context.fillText(name, canvas.width / 2, canvas.height - 30);
     let texture = new THREE.Texture(canvas);
     texture.needsUpdate = true;

@@ -16,12 +16,13 @@ function creatNewModel(file, pos) {
 
     loader.load(file, function (gltf) {
         const model = gltf.scene;
-        model.scale.set(0.05, 0.05, 0.05);  
+        model.scale.set(0.05, 0.05, 0.05);
         model.position.set(pos.x, pos.y, pos.z);
         scene.add(model);
         thingsThatNeedSpinning.push(model);
     });
 }
+
 
 function init3D() {
     scene = new THREE.Scene();
@@ -34,8 +35,8 @@ function init3D() {
     //this puts the three.js stuff in a particular div
     document.getElementById('THREEcontainer').appendChild(renderer.domElement)
 
-    //let bgGeometery = new THREE.SphereGeometry(1000, 60, 40);
-    let bgGeometery = new THREE.CylinderGeometry(725, 725, 1000, 10, 10, true)
+    let bgGeometery = new THREE.SphereGeometry(1000, 60, 40);
+    // let bgGeometery = new THREE.CylinderGeometry(725, 725, 1000, 10, 10, true)
     bgGeometery.scale(-1, 1, 1);
     // has to be power of 2 like (4096 x 2048) or(8192x4096).  i think it goes upside down because texture is not right size
     let panotexture = new THREE.TextureLoader().load("central-park.jpeg");
@@ -52,6 +53,7 @@ function init3D() {
 
     camera.position.z = 0;
     animate();
+
 }
 
 function animate() {
@@ -150,6 +152,9 @@ function find3DCoornatesInFrontOfCamera(distance, mouse) {
     return vector;
 }
 
+
+
+
 function createNewImage(img, posInWorld, file) {
 
     console.log("Created New Text", posInWorld);
@@ -161,7 +166,7 @@ function createNewImage(img, posInWorld, file) {
     let fontSize = Math.max(12);
     context.font = fontSize + "pt Arial";
     context.textAlign = "center";
-    context.fillStyle = "red";
+    context.fillStyle = "blue";
     context.fillText(file.name, canvas.width / 2, canvas.height - 30);
     let texture = new THREE.Texture(canvas);
     texture.needsUpdate = true;
@@ -178,6 +183,7 @@ function createNewImage(img, posInWorld, file) {
     mesh.scale.set(10, 10, 10);
     scene.add(mesh);
 }
+
 
 function createNewText(text_msg, posInWorld) {
 
@@ -289,26 +295,9 @@ function addP5To3D(_x, _y) {  //called from double click
     thingsThatNeedUpdating.push(thisObject);
 }
 
-function findObjectUnderMouse(x, y) {
-    let raycaster = new THREE.Raycaster(); // create once
-    //var mouse = new THREE.Vector2(); // create once
-    let mouse = {};
-    mouse.x = (x / renderer.domElement.clientWidth) * 2 - 1;
-    mouse.y = - (y / renderer.domElement.clientHeight) * 2 + 1;
-    raycaster.setFromCamera(mouse, camera);
 
-    let intersects = raycaster.intersectObjects(clickableMeshes, false);
 
-    // if there is one (or more) intersections
-    let hitObject = null;
-    if (intersects.length > 0) {
-        let hitMesh = intersects[0].object; //closest objec
-        hitObject = myObjectsByThreeID[hitMesh.uuid]; //use look up table assoc array
 
-    }
-    return hitObject;
-    //console.log("Hit ON", hitMesh);
-}
 
 /////MOUSE STUFF
 
@@ -341,9 +330,6 @@ function div3DDoubleClick(event) {
 }
 
 function div3DMouseDown(event) {
-    selectedObject = findObjectUnderMouse(event.clientX, event.clientY);
-    console.log('selectedObject', selectedObject);
-    mouseDownX = event.clientX;
     mouseDownX = event.clientX;
     mouseDownY = event.clientY;
     mouseDownLon = lon;
@@ -355,26 +341,12 @@ function div3DMouseMove(event) {
     if (isUserInteracting) {
         lon = (mouseDownX - event.clientX) * 0.1 + mouseDownLon;
         lat = (event.clientY - mouseDownY) * 0.1 + mouseDownLat;
-        //either move the selected object or the camera 
-        if (selectedObject) {
-            let pos = project2DCoordsInto3D(100, { x: event.clientX, y: event.clientY });
-            selectedObject.mesh.position.x = pos.x;
-            selectedObject.mesh.position.y = pos.y;
-            selectedObject.mesh.position.z = pos.z;
-            selectedObject.mesh.lookAt(0, 0, 0);
-
-        } else {
-            computeCameraOrientation();
-        }
+        computeCameraOrientation();
     }
 }
 
 function div3DMouseUp(event) {
     isUserInteracting = false;
-    if (selectedObject) {
-        storageJSON[selectedObject.threeID].position = selectedObject.mesh.position;
-        store();
-    }
 }
 
 function div3DMouseWheel(event) {
