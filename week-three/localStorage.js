@@ -1,5 +1,6 @@
-//code adpated from Dano
 import * as THREE from 'https://cdnjs.cloudflare.com/ajax/libs/three.js/0.160.1/three.module.min.js';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+
 let camera, scene, renderer;
 let thingsThatNeedUpdating = [];  //for updating textures
 let myObjectsByThreeID = {}  //for converting from three.js object to my JSON object
@@ -337,6 +338,9 @@ function findObjectUnderMouse(x, y) {
     //console.log("Hit ON", hitMesh);
 }
 
+
+
+
 /////MOUSE STUFF
 
 let mouseDownX = 0, mouseDownY = 0;
@@ -396,6 +400,7 @@ function div3DMouseMove(event) {
         }
     }
 }
+
 
 function div3DMouseUp(event) {
     isUserInteracting = false;
