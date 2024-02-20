@@ -133,9 +133,6 @@ function animate() {
     requestAnimationFrame(animate);
 }
 
-
-
-
 function createNewImage(img, posInWorld, firebaseKey) {
 
     let canvas = document.createElement("canvas");
