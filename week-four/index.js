@@ -26,12 +26,15 @@ export function reactToFirebase(reaction, data, key) {
             let img = new Image();  //create a new image
             img.onload = function () {
                 let posInWorld = data.position;
-                createNewImage(img, posInWorld, key);
+                let width = 50; // custom width
+                let height = 50; // custom height
+                createNewImage(img, posInWorld, key, width, height);
             }
             img.src = data.base64;
         } else if (data.type === "p5ParticleSystem") {
             createNewP5(data, key);
         }
+        
     } else if (reaction === "changed") {
         console.log("changed", data);
         let thisObject = myObjectsByFirebaseKey[key];
