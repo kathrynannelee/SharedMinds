@@ -4,14 +4,13 @@ import { getDatabase, ref, onValue, update, set, push, onChildAdded, onChildChan
 import { reactToFirebase } from './index.js';
 
 const firebaseConfig = {
-    apiKey: "AIzaSyAvM1vaJ3vcnfycLFeb8RDrTN7O2ToEWzk",
-    authDomain: "shared-minds.firebaseapp.com",
-    projectId: "shared-minds",
-    storageBucket: "shared-minds.appspot.com",
-    messagingSenderId: "258871453280",
-    appId: "1:258871453280:web:4c103da9b230e982544505",
-    measurementId: "G-LN0GNWFZQQ"
-};
+    apiKey: "AIzaSyBgs2T56YDynJkg8PtJfuYJKhxxhZYA6Qc",
+    authDomain: "shared-minds-diy.firebaseapp.com",
+    projectId: "shared-minds-diy",
+    storageBucket: "shared-minds-diy.appspot.com",
+    messagingSenderId: "312673210765",
+    appId: "1:312673210765:web:6e49ecae4dd678deb3adc4"
+  };
 
 const app = initializeApp(firebaseConfig);
 let appName = "SharedMindsExample";

@@ -2,7 +2,6 @@ import * as MAIN from './index.js';
 import * as FB from './firebaseSetup.js';
 import { MathUtils } from 'https://cdnjs.cloudflare.com/ajax/libs/three.js/0.160.1/three.module.min.js';
 
-
 /////MOUSE STUFF
 let mouseDownX = 0, mouseDownY = 0;
 let lon = -90, mouseDownLon = 0;
