@@ -26,9 +26,10 @@ export function reactToFirebase(reaction, data, key) {
             let img = new Image();  //create a new image
             img.onload = function () {
                 let posInWorld = data.position;
-                let width = 50; // custom width
-                let height = 50; // custom height
-                createNewImage(img, posInWorld, key, width, height);
+                //let width = 50; // custom width
+                //let height = 50; // custom height
+                //createNewImage(img, posInWorld, key, width, height);
+                createNewImage(img, posInWorld, key);
             }
             img.src = data.base64;
         } else if (data.type === "p5ParticleSystem") {
