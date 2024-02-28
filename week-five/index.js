@@ -9,7 +9,7 @@ let isEditing = false;
 let editingObject = null;
 let objects = {};
 
-let userName = prompt("Please enter your name", "Harry Potter");
+let userName = prompt("Please enter your name!", "Guest");
 
 // Get the input box and the canvas element
 const canvas = document.createElement('canvas');
@@ -57,13 +57,13 @@ function init3D() {
 const inputBox = document.createElement('input');
 inputBox.setAttribute('type', 'text');
 inputBox.setAttribute('id', 'inputBox');
-inputBox.setAttribute('placeholder', 'Enter text here');
+inputBox.setAttribute('placeholder', 'Enter your favorite color');
 inputBox.style.position = 'absolute';
 inputBox.style.left = '50%';
 inputBox.style.top = '50%';
 inputBox.style.transform = 'translate(-50%, -50%)';
 inputBox.style.zIndex = '100';
-inputBox.style.fontSize = '30px';
+inputBox.style.fontSize = '25px';
 inputBox.style.fontFamily = 'Arial';
 document.body.appendChild(inputBox);
 
@@ -96,7 +96,7 @@ function redrawAll() {
     const ctx = canvas.getContext('2d');
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.font = '30px Arial';
-    ctx.fillStyle = 'black';
+    ctx.fillStyle = 'blue';
     for (let key in objects) {
         const object = objects[key];
         if (object.type === 'text') {
