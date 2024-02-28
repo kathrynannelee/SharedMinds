@@ -8,7 +8,6 @@ let myObjectsByThreeID = {}  //for converting from three.js object to my JSON ob
 let clickableMeshes = []; //for use with raycasting
 let myObjectsByFirebaseKey = {}; //for converting from firebase key to my JSON object
 
-
 initHTML();
 init3D();
 recall();

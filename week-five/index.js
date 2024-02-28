@@ -1,3 +1,6 @@
+import * as THREE from 'https://cdnjs.cloudflare.com/ajax/libs/three.js/0.160.1/three.module.min.js';
+//import * as FB from './firebaseSetup.js';
+//import { initMoveCameraWithMouse, initHTML } from './interaction.js';
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-app.js";
 import { getDatabase, ref, onValue, update, set, push, onChildAdded, onChildChanged, onChildRemoved } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-database.js";
 
@@ -18,9 +21,38 @@ canvas.style.left = '0';
 canvas.style.top = '0';
 canvas.style.width = '100%';
 canvas.style.height = '100%';
+canvas.backgroundImage = "url('central-patk.jpeg')";
 document.body.appendChild(canvas);
 console.log('canvas', canvas.width, canvas.height);
 
+//init3D();
+
+function init3D() {
+    scene = new THREE.Scene();
+    camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.1, 1000);
+    camera.target = new THREE.Vector3(0, 0, 0);  //mouse controls move this around and camera looks at it 
+    renderer = new THREE.WebGLRenderer();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    ///document.body.appendChild(renderer.domElement);
+
+    //this puts the three.js stuff in a particular div
+    document.getElementById('THREEcontainer').appendChild(renderer.domElement)
+
+    //let bgGeometery = new THREE.SphereGeometry(1000, 60, 40);
+    let bgGeometery = new THREE.CylinderGeometry(725, 725, 1000, 10, 10, true)
+    bgGeometery.scale(-1, 1, 1);
+    // has to be power of 2 like (4096 x 2048) or(8192x4096).  i think it goes upside down because texture is not right size
+    let panotexture = new THREE.TextureLoader().load("diy-room.png");
+    // let material = new THREE.MeshBasicMaterial({ map: panotexture, transparent: true,   alphaTest: 0.02,opacity: 0.3});
+    let backMaterial = new THREE.MeshBasicMaterial({ map: panotexture });
+    let back = new THREE.Mesh(bgGeometery, backMaterial);
+    scene.add(back);
+
+    initMoveCameraWithMouse(camera, renderer);
+
+    camera.position.z = 0;
+    animate();
+}
 
 const inputBox = document.createElement('input');
 inputBox.setAttribute('type', 'text');
@@ -45,7 +77,6 @@ inputBox.addEventListener('keydown', function (event) {
         const x = inputBoxRect.left;
         const y = inputBoxRect.top;
         // Add the text to the database
-
 
         const data = { type: 'text', position: { x: x, y: y }, text: inputValue, userName: userName };
         if (isEditing) {
@@ -79,17 +110,11 @@ document.addEventListener('keydown', (event) => {
     if (event.key === 'Escape') {
         isEditing = false;
         inputBox.value = "";
-
-
     } else if (isEditing && event.shiftKey && (event.key === 'Backspace' || event.key === 'Delete')) {
         console.log("delete");
         deleteFromFirebase('texts', editingObject.key);
     }
 });
-
-
-
-
 
 // Add event listener to the document for mouse down event
 document.addEventListener('mousedown', (event) => {
