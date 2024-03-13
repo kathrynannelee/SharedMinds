@@ -9,6 +9,7 @@ let progress = "loading Face ML";
 let inputField;
 let listener;
 let distanceFromCenter = 700;
+let distanceFromCamera = -800;
 
 let myName; //= prompt("name?");
 
@@ -76,14 +77,14 @@ async function askForSound(p_prompt) {
     const url = replicateProxy + "/create_n_get/"
     console.log("url", url, "options", options);
     const picture_info = await fetch(url, options);
-    //console.log("picture_response", picture_info);
+    console.log("picture_response", picture_info);
     const proxy_said = await picture_info.json();
     console.log("proxy_said", proxy_said.output.audio);
-    // const ctx = new AudioContext();
-    // let incomingData = await fetch(proxy_said.output.audio);
-    // let arrayBuffer = await incomingData.arrayBuffer();
-    // let decodedAudio = await ctx.decodeAudioData(arrayBuffer);
-    // const playSound = ctx.createBufferSource();
+    const ctx = new AudioContext();
+    let incomingData = await fetch(proxy_said.output.audio);
+    let arrayBuffer = await incomingData.arrayBuffer();
+    let decodedAudio = await ctx.decodeAudioData(arrayBuffer);
+    const playSound = ctx.createBufferSource();
     // playSound.buffer = decodedAudio;;
     // playSound.connect(ctx.destination);
     // playSound.start(ctx.currentTime);
@@ -248,7 +249,7 @@ async function askForPicture(inputField) {
     const url = replicateProxy + "/create_n_get/"
     console.log("url", url, "options", options);
     const picture_info = await fetch(url, options);
-    //console.log("picture_response", picture_info);
+    console.log("picture_response", picture_info);
     const proxy_said = await picture_info.json();
 
     if (proxy_said.output.length == 0) {
