@@ -2,8 +2,7 @@ let camera3D, scene, renderer
 let myCanvas
 
 let sounds = [];
-
-
+let images = [];
 let angleOnCircle;
 
 let progress = "loading Face ML";
@@ -35,6 +34,18 @@ function setup() {
     });
     init3D();
 }
+
+var input_image_field = document.createElement("input");
+input_image_field.type = "text";
+input_image_field.id = "input_image_prompt";
+input_image_field.value = "a modern kitchenette";
+input_image_field.size = 100;
+document.getElementById("webInterfaceContainer").append(input_image_field);
+input_image_field.addEventListener("keyup", function (event) {
+    if (event.key === "Enter") {
+        askForPicture(input_image_field);
+    }
+});
 
 function draw() {
 
@@ -142,9 +153,6 @@ function placeSound(prompt, url) {
     sounds.push(me);
 }
 
-
-
-
 // function positionOnCircle(angle, mesh) {
 //     //imagine a circle looking down on the world and do High School math
 
@@ -153,8 +161,6 @@ function placeSound(prompt, url) {
 //     mesh.position.set(x, 0, z);
 //     mesh.lookAt(0, 0, 0);
 // }
-
-
 
 function init3D() {
     scene = new THREE.Scene();
@@ -192,12 +198,80 @@ function init3D() {
 
     let back = new THREE.Mesh(bgGeometery, backMaterial);
     scene.add(back);
+    moveCameraWithMouse();
+
+    camera3D.position.z = 5;
 
     animate();
 }
 
+function placeImage(img) {
+    var texture = new THREE.Texture(img);
+    console.log(img, texture);
+    var material = new THREE.MeshBasicMaterial({ map: texture, transparent: false });
+    var geo = new THREE.PlaneGeometry(512, 512);
+    var mesh = new THREE.Mesh(geo, material);
+
+    const posInWorld = new THREE.Vector3();
+    //remember we attached a tiny to the  front of the camera in init, now we are asking for its position
+
+    in_front_of_you.position.set(0, 0, distanceFromCamera);  //base the the z position on camera field of view
+    in_front_of_you.getWorldPosition(posInWorld);
+    mesh.position.x = posInWorld.x;
+    mesh.position.y = posInWorld.y;
+    mesh.position.z = posInWorld.z;
+    console.log(posInWorld);
+    mesh.lookAt(0, 0, 0);
+    //mesh.scale.set(10,10, 10);
+    scene.add(mesh);
+    images.push({ "object": mesh, "texture": texture });
+}
+
+async function askForPicture(inputField) {
+    prompt = inputField.value;
+    inputField.value = "Waiting for the generated image of:" + prompt;
+
+    let data = {
+        "version": "c221b2b8ef527988fb59bf24a8b97c4561f1c671f73bd389f866bfb27c061316",
+        input: {
+            "prompt": prompt,
+            "width": 1024,
+            "height": 512,
+        },
+    };
+    console.log("Asking for Picture Info From Replicate via Proxy", data);
+    let options = {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+    };
+    const url = replicateProxy + "/create_n_get/"
+    console.log("url", url, "options", options);
+    const picture_info = await fetch(url, options);
+    //console.log("picture_response", picture_info);
+    const proxy_said = await picture_info.json();
+
+    if (proxy_said.output.length == 0) {
+        alert("Something went wrong, try it again");
+    } else {
+        inputField.value = prompt;
+        //Loading of the home test image - img1
+        var incomingImage = new Image();
+        incomingImage.crossOrigin = "anonymous";
+        incomingImage.onload = function () {
+            placeImage(incomingImage);
+        };
+        incomingImage.src = proxy_said.output[0];
+    }
+}
+
 function animate() {
     requestAnimationFrame(animate);
+    for (var i = 0; i < images.length; i++) {
+        images[i].texture.needsUpdate = true;
+    }
     renderer.render(scene, camera3D);
 }
 
