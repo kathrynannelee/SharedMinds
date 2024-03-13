@@ -4,7 +4,7 @@ let myCanvas
 let sounds = [];
 let images = [];
 let angleOnCircle;
-
+const replicateProxy = "https://replicate-api-proxy.glitch.me"
 let progress = "loading Face ML";
 let inputField;
 let listener;
@@ -16,15 +16,15 @@ function setup() {
     myCanvas = createCanvas(512, 512);
     //  document.body.append(myCanvas.elt);
     myCanvas.hide();
-    inputField = createInput("Grateful Dead meets Hip Hop");
+    inputField = createInput("rap meets jazz tunes");
     inputField.position(windowWidth / 2 - 100, 50);
     inputField.size(200, 20);
-    let askButton = createButton("Ask For Sound");
+    let askButton = createButton("play sound");
     askButton.position(windowWidth / 2 - 100, 80);
     askButton.mousePressed(function () {
         askForSound(inputField.value());
     });
-    let pauseButton = createButton("Pause Listener");
+    let pauseButton = createButton("pause sound");
     pauseButton.position(windowWidth / 2 - 100, 110);
     pauseButton.mousePressed(function () {
         if (listener.context.state === 'suspended') {
@@ -88,7 +88,7 @@ async function askForSound(p_prompt) {
     // playSound.connect(ctx.destination);
     // playSound.start(ctx.currentTime);
     placeSound(p_prompt, proxy_said.output.audio)
-    //playSound.loop = true;
+    playSound.loop = true;
     document.body.style.cursor = "default";
     inputField.value(p_prompt);
 }
@@ -173,9 +173,6 @@ function init3D() {
     renderer.setSize(window.innerWidth, window.innerHeight);
     document.body.appendChild(renderer.domElement);
 
-    moveCameraWithMouse();
-
-
     //just a place holder the follows the camera and marks location to drop incoming  pictures
     //tiny little dot (could be invisible) 
     var geometryFront = new THREE.BoxGeometry(1, 1, 1);
@@ -206,6 +203,7 @@ function init3D() {
 }
 
 function placeImage(img) {
+    const replicateProxy = "https://replicate-api-proxy.glitch.me"
     var texture = new THREE.Texture(img);
     console.log(img, texture);
     var material = new THREE.MeshBasicMaterial({ map: texture, transparent: false });
