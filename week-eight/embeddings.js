@@ -41,6 +41,41 @@ function draw() {
   }
 }
 
+async function askForPicture(p_prompt) {
+    const imageDiv = document.getElementById("resulting_image");
+    imageDiv.innerHTML = "Waiting for reply from Replicate's Stable Diffusion API...";
+    let data = {
+        "version": "da77bc59ee60423279fd632efb4795ab731d9e3ca9705ef3341091fb989b7eaf",
+        input: {
+            "prompt": p_prompt,
+            "width": 512,
+            "height": 512,
+        },
+    };
+    console.log("Asking for Picture Info From Replicate via Proxy", data);
+    let options = {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+    };
+    const url = replicateProxy + "/create_n_get/"
+    console.log("url", url, "options", options);
+    const picture_info = await fetch(url, options);
+    //console.log("picture_response", picture_info);
+    const proxy_said = await picture_info.json();
+
+    if (proxy_said.output.length == 0) {
+        imageDiv.innerHTML = "Something went wrong, try it again";
+    } else {
+        imageDiv.innerHTML = "";
+        let img = document.createElement("img");
+        img.src = proxy_said.output[0];
+        imageDiv.appendChild(img);
+    }
+}
+
 async function askForEmbeddings(p_prompt) {
   let promptInLines = p_prompt.replace(/,/g, "\n");
   let data = {
@@ -71,6 +106,7 @@ async function askForEmbeddings(p_prompt) {
     let cdist = cosineSimilarity(firstOne.embedding, thisOne.embedding);
     distances.push({"reference": firstOne.input, "phrase": thisOne.input, "distance": cdist})
     console.log(firstOne.input, thisOne.input, cdist);
+    askForPicture(firstOne.value);
   }
 }
 
