@@ -12,10 +12,10 @@ function setup() {
   // Set up the canvas
   createCanvas(800, 650);
   // Seed the random function for reproducibility
-  randomSeed(Math.floor(Math.random() * 9));
+  //randomSeed(Math.floor(Math.random() * 9));
 
   // Generate random color data and store it in embeddings array
-  for (let i = 0; i < 500; i++) {
+  for (let i = 0; i < 800; i++) {
     let data = [random(255), random(255), random(255)];
     embeddings.push(data);
   }
