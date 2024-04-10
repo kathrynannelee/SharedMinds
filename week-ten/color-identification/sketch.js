@@ -1,13 +1,10 @@
 /*
- * 👋 Hello! This is an ml5.js example made and shared with ❤️.
- * Learn more about the ml5.js project: https://ml5js.org/
- * ml5.js license and Code of Conduct: https://github.com/ml5js/ml5-next-gen/blob/main/LICENSE.md
- *
- * This example demonstrates training a color classifier through ml5.neuralNetwork.
+ * example adpated from the ml5.js project for training a color classifier through ml5.neuralNetwork
  */
 
 // Step 1: load data or create some data
 let data = [
+  { r: 255, g: 255, b: 255, color: "black" },
   { r: 255, g: 0, b: 0, color: "red-ish" },
   { r: 254, g: 0, b: 0, color: "red-ish" },
   { r: 253, g: 0, b: 0, color: "red-ish" },
@@ -17,25 +14,35 @@ let data = [
   { r: 0, g: 0, b: 255, color: "blue-ish" },
   { r: 0, g: 0, b: 254, color: "blue-ish" },
   { r: 0, g: 0, b: 253, color: "blue-ish" },
+  { r: 255, g: 0, b: 255, color: "magenta-ish" },
+  { r: 255, g: 0, b: 254, color: "magenta-ish" },
+  { r: 255, g: 0, b: 253, color: "magenta-ish" },
+  { r: 255, g: 255, b: 0, color: "yellow-ish" },
+  { r: 254, g: 255, b: 0, color: "yellow-ish" },
+  { r: 253, g: 255, b: 0, color: "yellow-ish" },
+  { r: 0, g: 255, b: 255, color: "cyan-ish" },
+  { r: 0, g: 254, b: 255, color: "cyan-ish" },
+  { r: 0, g: 253, b: 255, color: "cyan-ish" },
+  { r: 0, g: 0, b: 0, color: "white" },
 ];
 
 let classifer;
-let r = 255;
+let r = 0;
 let g = 0;
-let b = 0;
+let b = 255;
 let rSlider, gSlider, bSlider;
 let label = "training";
 
 function setup() {
-  createCanvas(640, 240);
+  createCanvas(640, 540);
 
   // For this example to work across all browsers
   // "webgl" or "cpu" needs to be set as the backend
   ml5.setBackend("webgl");
 
-  rSlider = createSlider(0, 255, 255).position(10, 20);
+  rSlider = createSlider(0, 255, 0).position(10, 20);
   gSlider = createSlider(0, 255, 0).position(10, 40);
-  bSlider = createSlider(0, 255, 0).position(10, 60);
+  bSlider = createSlider(0, 255, 255).position(10, 60);
 
   // Step 2: set your neural network options
   let options = {
