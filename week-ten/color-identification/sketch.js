@@ -2,7 +2,7 @@
  * example adpated from the ml5.js project for training a color classifier through ml5.neuralNetwork
  */
 
-// Step 1: load data or create some data
+// Step 1: load data
 let data = [
   { r: 255, g: 255, b: 255, color: "black" },
   { r: 255, g: 0, b: 0, color: "red-ish" },
