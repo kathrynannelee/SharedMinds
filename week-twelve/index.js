@@ -1,8 +1,12 @@
 import * as THREE from 'https://cdnjs.cloudflare.com/ajax/libs/three.js/0.160.1/three.module.min.js';
-let camera, scene, renderer;
 
+let camera, scene, renderer;
+let thingsThatNeedUpdating = [];
+let myObjectsByThreeID = {}
+let clickableMeshes = [];
 initHTML();
 init3D();
+
 
 function init3D() {
     scene = new THREE.Scene();
@@ -20,18 +24,21 @@ function init3D() {
     bgGeometery.scale(-1, 1, 1);
     // has to be power of 2 like (4096 x 2048) or(8192x4096).  i think it goes upside down because texture is not right size
     let panotexture = new THREE.TextureLoader().load("puzzling-time.png");
-    // var material = new THREE.MeshBasicMaterial({ map: panotexture, transparent: true,   alphaTest: 0.02,opacity: 0.3});
+    // let material = new THREE.MeshBasicMaterial({ map: panotexture, transparent: true,   alphaTest: 0.02,opacity: 0.3});
     let backMaterial = new THREE.MeshBasicMaterial({ map: panotexture });
     let back = new THREE.Mesh(bgGeometery, backMaterial);
     scene.add(back);
 
-    moveCameraWithMouse();
+    initMoveCameraWithMouse();
 
     camera.position.z = 0;
     animate();
 }
 
 function animate() {
+    for (let i = 0; i < thingsThatNeedUpdating.length; i++) {
+        thingsThatNeedUpdating[i].texture.needsUpdate = true;
+    }
     renderer.render(scene, camera);
     requestAnimationFrame(animate);
 }
@@ -63,8 +70,8 @@ function initHTML() {
             const inputRect = textInput.getBoundingClientRect();
 
             let mouse = { x: inputRect.left, y: inputRect.top };
-            console.log("Entered Text", mouse.z);
-            const pos = find3DCoornatesInFrontOfCamera(150 - camera.fov, mouse);
+            console.log("Entered Text", textInput.value);
+            const pos = project2DCoordsInto3D(150 - camera.fov, mouse);
             createNewText(textInput.value, pos);
         }
     });
@@ -86,7 +93,7 @@ function initHTML() {
                 const img = new Image();
                 img.onload = function () {
                     let mouse = { x: e.clientX, y: e.clientY };
-                    const pos = find3DCoornatesInFrontOfCamera(150 - camera.fov, mouse);
+                    const pos = project2DCoordsInto3D(150 - camera.fov, mouse);
                     createNewImage(img, pos, files[i]);
                 };
                 img.src = event.target.result;
@@ -94,12 +101,9 @@ function initHTML() {
             reader.readAsDataURL(files[i]);
         }
     }, true);
-
-
-
 }
 
-function find3DCoornatesInFrontOfCamera(distance, mouse) {
+function project2DCoordsInto3D(distance, mouse) {
     let vector = new THREE.Vector3();
     vector.set(
         (mouse.x / window.innerWidth) * 2 - 1,
@@ -112,24 +116,26 @@ function find3DCoornatesInFrontOfCamera(distance, mouse) {
     return vector;
 }
 
-function createNewImage(img, posInWorld, file) {
+
+
+function createNewImage(img, posInWorld, name) {
 
     console.log("Created New Text", posInWorld);
-    var canvas = document.createElement("canvas");
+    let canvas = document.createElement("canvas");
     canvas.width = img.width;
     canvas.height = img.height;
-    var context = canvas.getContext("2d");
+    let context = canvas.getContext("2d");
     context.drawImage(img, 0, 0);
-    var fontSize = Math.max(12);
+    let fontSize = Math.max(12);
     context.font = fontSize + "pt Arial";
     context.textAlign = "center";
     context.fillStyle = "red";
-    context.fillText(file.name, canvas.width / 2, canvas.height - 30);
-    var textTexture = new THREE.Texture(canvas);
-    textTexture.needsUpdate = true;
-    var material = new THREE.MeshBasicMaterial({ map: textTexture, transparent: true });
-    var geo = new THREE.PlaneGeometry(canvas.width / canvas.width, canvas.height / canvas.width);
-    var mesh = new THREE.Mesh(geo, material);
+    context.fillText(name, canvas.width / 2, canvas.height - 30);
+    let texture = new THREE.Texture(canvas);
+    texture.needsUpdate = true;
+    let material = new THREE.MeshBasicMaterial({ map: texture, transparent: true });
+    let geo = new THREE.PlaneGeometry(canvas.width / canvas.width, canvas.height / canvas.width);
+    let mesh = new THREE.Mesh(geo, material);
 
     mesh.position.x = posInWorld.x;
     mesh.position.y = posInWorld.y;
@@ -139,26 +145,30 @@ function createNewImage(img, posInWorld, file) {
     mesh.lookAt(0, 0, 0);
     mesh.scale.set(10, 10, 10);
     scene.add(mesh);
+    let thisObject = { type: "image", threeID: mesh.uuid, canvas: canvas, mesh: mesh, texture: texture };
+    clickableMeshes.push(mesh);
+    myObjectsByThreeID[mesh.uuid] = thisObject;
 }
+
 
 function createNewText(text_msg, posInWorld) {
 
     console.log("Created New Text", posInWorld);
-    var canvas = document.createElement("canvas");
+    let canvas = document.createElement("canvas");
     canvas.width = 512;
     canvas.height = 512;
-    var context = canvas.getContext("2d");
+    let context = canvas.getContext("2d");
     context.clearRect(0, 0, canvas.width, canvas.height);
-    var fontSize = Math.max(camera.fov / 2, 72);
+    let fontSize = Math.max(camera.fov / 2, 72);
     context.font = fontSize + "pt Arial";
     context.textAlign = "center";
     context.fillStyle = "red";
     context.fillText(text_msg, canvas.width / 2, canvas.height / 2);
-    var textTexture = new THREE.Texture(canvas);
-    textTexture.needsUpdate = true;
-    var material = new THREE.MeshBasicMaterial({ map: textTexture, transparent: true });
-    var geo = new THREE.PlaneGeometry(1, 1);
-    var mesh = new THREE.Mesh(geo, material);
+    let texture = new THREE.Texture(canvas);
+    texture.needsUpdate = true;
+    let material = new THREE.MeshBasicMaterial({ map: texture, transparent: true });
+    let geo = new THREE.PlaneGeometry(1, 1);
+    let mesh = new THREE.Mesh(geo, material);
 
     mesh.position.x = posInWorld.x;
     mesh.position.y = posInWorld.y;
@@ -168,7 +178,116 @@ function createNewText(text_msg, posInWorld) {
     mesh.lookAt(0, 0, 0);
     mesh.scale.set(10, 10, 10);
     scene.add(mesh);
+    let thisObject = { type: "text", text: text_msg, threeID: mesh.uuid, canvas: canvas, mesh: mesh, texture: texture };
+    clickableMeshes.push(mesh);
+    myObjectsByThreeID[mesh.uuid] = thisObject;
 }
+
+function createP5Sketch(w, h) {
+    let sketch = function (p) {
+        let particles = [];
+        let myCanvas;
+        p.getCanvas = function () {
+            return myCanvas;
+        }
+        p.setup = function () {
+            myCanvas = p.createCanvas(w, h);
+
+        };
+        p.draw = function () {
+            p.clear();
+            for (let i = 0; i < 5; i++) {
+                let p = new Particle();
+                particles.push(p);
+            }
+            for (let i = particles.length - 1; i >= 0; i--) {
+                particles[i].update();
+                particles[i].show();
+                if (particles[i].finished()) {
+                    // remove this particle
+                    particles.splice(i, 1);
+                }
+            }
+        };
+
+        class Particle {
+            constructor() {
+                this.x = p.width / 2;
+                this.y = p.height / 2;
+                this.vx = p.random(-1, 1);
+                this.vy = p.random(-4, 1);
+                this.alpha = 255;
+            }
+            finished() {
+                return this.alpha < 0;
+            }
+            update() {
+                this.x += this.vx;
+                this.y += this.vy;
+                this.alpha -= 10;
+            }
+            show() {
+                p.noStroke();
+                p.fill(255, 0, 255, this.alpha);
+                p.ellipse(this.x, this.y, 5);
+            }
+        }
+    };
+
+    return new p5(sketch);
+}
+
+function addP5To3D(_x, _y) {  //called from double click
+
+    let newP5 = createP5Sketch(200, 200);
+    //pull the p5 canvas out of sketch 
+    //and then regular (elt) js canvas out of special p5 canvas
+    let p5Canvas = newP5.getCanvas();
+    let canvas = p5Canvas.elt;
+    let texture = new THREE.Texture(canvas);
+    texture.needsUpdate = true;
+    let material = new THREE.MeshBasicMaterial({ map: texture, transparent: true });
+    let geo = new THREE.PlaneGeometry(canvas.width / canvas.width, canvas.height / canvas.width);
+    let mesh = new THREE.Mesh(geo, material);
+
+    mesh.scale.set(10, 10, 10);
+
+    let mouse = { x: _x, y: _y };
+    console.log("camera fov", camera.fov);
+    const posInWorld = project2DCoordsInto3D(300 - camera.fov * 3, mouse);
+    mesh.position.x = posInWorld.x;
+    mesh.position.y = posInWorld.y;
+    mesh.position.z = posInWorld.z;
+
+    mesh.lookAt(0, 0, 0);
+    scene.add(mesh);
+    let thisObject = { type: "p5ParticleSystem", threeID: mesh.uuid, canvas: canvas, mesh: mesh, texture: texture };
+    thingsThatNeedUpdating.push(thisObject);
+    clickableMeshes.push(mesh);
+    myObjectsByThreeID[mesh.uuid] = thisObject;
+}
+
+function findObjectUnderMouse(x, y) {
+    let raycaster = new THREE.Raycaster(); // create once
+    //var mouse = new THREE.Vector2(); // create once
+    let mouse = {};
+    mouse.x = (x / renderer.domElement.clientWidth) * 2 - 1;
+    mouse.y = - (y / renderer.domElement.clientHeight) * 2 + 1;
+    raycaster.setFromCamera(mouse, camera);
+
+    let intersects = raycaster.intersectObjects(clickableMeshes, false);
+
+    // if there is one (or more) intersections
+    let hitObject = null;
+    if (intersects.length > 0) {
+        let hitMesh = intersects[0].object; //closest objec
+        hitObject = myObjectsByThreeID[hitMesh.uuid]; //use look up table assoc array
+
+    }
+    return hitObject;
+    //console.log("Hit ON", hitMesh);
+}
+
 
 
 
@@ -178,38 +297,59 @@ let mouseDownX = 0, mouseDownY = 0;
 let lon = -90, mouseDownLon = 0;
 let lat = 0, mouseDownLat = 0;
 let isUserInteracting = false;
+let selectedObject = null;
 
 
-function moveCameraWithMouse() {
+function initMoveCameraWithMouse() {
     //set up event handlers
     const div3D = document.getElementById('THREEcontainer');
     div3D.addEventListener('mousedown', div3DMouseDown, false);
     div3D.addEventListener('mousemove', div3DMouseMove, false);
     div3D.addEventListener('mouseup', div3DMouseUp, false);
     div3D.addEventListener('wheel', div3DMouseWheel, { passive: true });
+    //add double click listener
+    window.addEventListener('dblclick', div3DDoubleClick, false); // Add double click event listener
     window.addEventListener('resize', onWindowResize, false);
     //document.addEventListener('keydown', onDocumentKeyDown, false);
     camera.target = new THREE.Vector3(0, 0, 0);  //something for the camera to look at
 }
 
+function div3DDoubleClick(event) {
+    console.log('double click');
+    addP5To3D(event.clientX, event.clientY);
+}
+
 function div3DMouseDown(event) {
+    isUserInteracting = true;
+    selectedObject = findObjectUnderMouse(event.clientX, event.clientY);
+    console.log('selectedObject', selectedObject);
     mouseDownX = event.clientX;
     mouseDownY = event.clientY;
     mouseDownLon = lon;
     mouseDownLat = lat;
-    isUserInteracting = true;
+
 }
 
 function div3DMouseMove(event) {
     if (isUserInteracting) {
         lon = (mouseDownX - event.clientX) * 0.1 + mouseDownLon;
         lat = (event.clientY - mouseDownY) * 0.1 + mouseDownLat;
-        computeCameraOrientation();
+        //either move the selected object or the camera 
+        if (selectedObject) {
+            let pos = project2DCoordsInto3D(100, { x: event.clientX, y: event.clientY });
+            selectedObject.mesh.position.x = pos.x;
+            selectedObject.mesh.position.y = pos.y;
+            selectedObject.mesh.position.z = pos.z;
+        } else {
+            computeCameraOrientation();
+        }
     }
 }
 
+
 function div3DMouseUp(event) {
     isUserInteracting = false;
+
 }
 
 function div3DMouseWheel(event) {
