@@ -7,7 +7,6 @@ let clickableMeshes = [];
 initHTML();
 init3D();
 
-
 function init3D() {
     scene = new THREE.Scene();
     camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.1, 1000);
@@ -23,7 +22,7 @@ function init3D() {
     let bgGeometery = new THREE.CylinderGeometry(725, 725, 1000, 10, 10, true)
     bgGeometery.scale(-1, 1, 1);
     // has to be power of 2 like (4096 x 2048) or(8192x4096).  i think it goes upside down because texture is not right size
-    let panotexture = new THREE.TextureLoader().load("puzzling-time.png");
+    let panotexture = new THREE.TextureLoader().load("puzzling-time-1.png");
     // let material = new THREE.MeshBasicMaterial({ map: panotexture, transparent: true,   alphaTest: 0.02,opacity: 0.3});
     let backMaterial = new THREE.MeshBasicMaterial({ map: panotexture });
     let back = new THREE.Mesh(bgGeometery, backMaterial);
@@ -55,15 +54,15 @@ function initHTML() {
     THREEcontainer.style.zIndex = "1";
 
     const textInput = document.createElement("input");
-    textInput.setAttribute("type", "text");
-    textInput.setAttribute("id", "textInput");
-    textInput.setAttribute("placeholder", "Enter text here");
+    //textInput.setAttribute("type", "text");
+    //textInput.setAttribute("id", "textInput");
+    //textInput.setAttribute("placeholder", "Enter text here");
     document.body.appendChild(textInput);
-    textInput.style.position = "absolute";
-    textInput.style.top = "50%";
-    textInput.style.left = "50%";
-    textInput.style.transform = "translate(-50%, -50%)";
-    textInput.style.zIndex = "5";
+    //textInput.style.position = "absolute";
+    //textInput.style.top = "50%";
+    //textInput.style.left = "50%";
+    //textInput.style.transform = "translate(-50%, -50%)";
+    //textInput.style.zIndex = "5";
 
     textInput.addEventListener("keydown", function (e) {
         if (e.key === "Enter") {  //checks whether the pressed key is "Enter"
