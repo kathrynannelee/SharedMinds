@@ -11,7 +11,7 @@ init3D();
 var input_image_field = document.createElement("input");
 input_image_field.type = "text";
 input_image_field.id = "input_image_prompt";
-input_image_field.value = "a modern kitchenette";
+input_image_field.value = "a pocket watch";
 input_image_field.size = 100;
 document.getElementById("webInterfaceContainer").append(input_image_field);
 input_image_field.addEventListener("keyup", function (event) {
@@ -36,7 +36,7 @@ function init3D() {
     in_front_of_you.position.set(0, 0, distanceFromCamera); //set it in front of the camera
     camera3D.add(in_front_of_you); // then add in front of the camera (not scene) so it follow it
 
-    let bgGeometry = new THREE.SphereGeometry(950, 60, 40);
+    let bgGeometry = new THREE.SphereGeometry(800, 250, 150);
     //let bgGeometery = new THREE.CylinderGeometry(725, 725, 1000, 10, 10, true)
     bgGeometry.scale(-1, 1, 1);
     // has to be power of 2 like (4096 x 2048) or(8192x4096).  i think it goes upside down because texture is not right size
