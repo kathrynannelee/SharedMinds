@@ -5,8 +5,8 @@ let source;
 
 // Tiles configuration
 let tiles = [];
-let cols = 4;
-let rows = 4;
+let cols = 3;
+let rows = 3;
 let w, h;
 
 // Order of tiles
@@ -15,13 +15,14 @@ let board = [];
 // Loading the image
 function preload() {
   source = loadImage("sleep.jpeg");
+  puzzle2 = loadImage("birthday.jpeg");
 }
 
 function setup() {
-  createCanvas(800, 750);
+  createCanvas(1200, 750);
   // pixel dimensions of each tiles
-  w = width / cols;
-  h = height / rows;
+  w = 400 / cols;
+  h = 400 / rows;
 
   document.getElementById('timer').innerHTML = 0o5 + ":" + 0o1;
   startTimer();
@@ -32,7 +33,7 @@ function setup() {
       let x = i * w;
       let y = j * h;
       let img = createImage(w, h);
-      img.copy(source, x, y, w, h, 0, 0, w, h);
+      img.copy(source, x+150, y+150, w, h, 0, 0, w, h);
       let index = i + j * cols;
       board.push(index);
       let tile = new Tile(index, img);
@@ -48,29 +49,6 @@ function setup() {
   
   // Shuffle the board
   simpleShuffle(board);
-}
-
-function startTimer() {
-  var presentTime = document.getElementById('timer').innerHTML;
-  var timeArray = presentTime.split(/[:]+/);
-  var m = timeArray[0];
-  var s = checkSecond((timeArray[1] - 1));
-  if(s==59){m=m-1}
-  if(m<0){
-    return
-  }
-  
-  document.getElementById('timer').innerHTML =
-    m + ":" + s;
-  console.log(m)
-  setTimeout(startTimer, 1000);
-  
-}
-
-function checkSecond(sec) {
-  if (sec < 10 && sec >= 0) {sec = "0" + sec}; // add zero in front of numbers < 10
-  if (sec < 0) {sec = "59"};
-  return sec;
 }
 
 // Swap two elements of an array
@@ -101,8 +79,6 @@ function mousePressed() {
   let j = floor(mouseY / h);
   move(i,j,board);
 }
-
-
 
 function draw() {
   background(0);
@@ -172,11 +148,33 @@ function isNeighbor(i, j, x, y) {
   return false;
 }
 
-
 // Probably could just use a variable
 // to track blank spot
 function findBlank() {
   for (let i = 0; i < board.length; i++) {
     if (board[i] == -1) return i;
   }
+}
+
+function startTimer() {
+  var presentTime = document.getElementById('timer').innerHTML;
+  var timeArray = presentTime.split(/[:]+/);
+  var m = timeArray[0];
+  var s = checkSecond((timeArray[1] - 1));
+  if(s==59){m=m-1}
+  if(m<0){
+    return
+  }
+  
+  document.getElementById('timer').innerHTML =
+    m + ":" + s;
+  console.log(m)
+  setTimeout(startTimer, 1000);
+  
+}
+
+function checkSecond(sec) {
+  if (sec < 10 && sec >= 0) {sec = "0" + sec}; // add zero in front of numbers < 10
+  if (sec < 0) {sec = "59"};
+  return sec;
 }
