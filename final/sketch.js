@@ -17,9 +17,7 @@ let board = [];
 // Loading the image
 function preload() {
   source = loadImage("puzzling-time-replicate.png");
-  //puzzle2 = loadImage("birthday.jpeg");
 }
-
 function setup() {
   createCanvas(1200, 750);
   // pixel dimensions of each tiles
@@ -166,6 +164,8 @@ function startTimer() {
   var s = checkSecond((timeArray[1] - 1));
   if(s==59){m=m-1}
   if(m<0){
+    document.querySelector("canvas").style.display = "none";
+    document.getElementById("puzzle-solved").style.display = "block"; 
     return
   }
   
@@ -173,7 +173,11 @@ function startTimer() {
     m + ":" + s;
   console.log(m)
   setTimeout(startTimer, 1000);
-  
+  // Do this instead
+  //setTimeout(() => {
+    //console.log("Hello World!");
+  //}, 500);
+
 }
 
 function checkSecond(sec) {
