@@ -48,7 +48,6 @@ function setup() {
   // -1 means empty spot
   board.push(-1);
   
-  // Shuffle the board
   simpleShuffle(board);
 }
 
@@ -112,6 +111,8 @@ function draw() {
   // If it is solved
   if (isSolved()) {
     console.log("SOLVED");
+    document.getElementById("time-left").innerText = "Yay! You solved the puzzle and won the game against time!";
+    document.getElementById("timer").innerText = "";
   }
 }
 
@@ -165,7 +166,8 @@ function startTimer() {
   if(s==59){m=m-1}
   if(m<0){
     document.querySelector("canvas").style.display = "none";
-    document.getElementById("puzzle-solved").style.display = "block"; 
+    document.getElementById("puzzle-solved").style.display = "block";
+    document.getElementById("time-left").style.backgroundColor = "red"; 
     return
   }
   
@@ -173,11 +175,6 @@ function startTimer() {
     m + ":" + s;
   console.log(m)
   setTimeout(startTimer, 1000);
-  // Do this instead
-  //setTimeout(() => {
-    //console.log("Hello World!");
-  //}, 500);
-
 }
 
 function checkSecond(sec) {
