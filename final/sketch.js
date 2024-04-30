@@ -5,24 +5,26 @@ let source;
 
 // Tiles configuration
 let tiles = [];
-let cols = 3;
-let rows = 3;
+//let tiles2 = [];
+let cols = 15;
+let rows = 15;
 let w, h;
 
 // Order of tiles
 let board = [];
+//let board2 = [];
 
 // Loading the image
 function preload() {
-  source = loadImage("sleep.jpeg");
-  puzzle2 = loadImage("birthday.jpeg");
+  source = loadImage("puzzling-time-replicate.png");
+  //puzzle2 = loadImage("birthday.jpeg");
 }
 
 function setup() {
   createCanvas(1200, 750);
   // pixel dimensions of each tiles
-  w = 400 / cols;
-  h = 400 / rows;
+  w = width / cols;
+  h = height / rows;
 
   document.getElementById('timer').innerHTML = 0o5 + ":" + 0o1;
   startTimer();
@@ -33,7 +35,7 @@ function setup() {
       let x = i * w;
       let y = j * h;
       let img = createImage(w, h);
-      img.copy(source, x+150, y+150, w, h, 0, 0, w, h);
+      img.copy(source, x, y, w, h, 0, 0, w, h);
       let index = i + j * cols;
       board.push(index);
       let tile = new Tile(index, img);
@@ -44,6 +46,7 @@ function setup() {
   // Remove the last tile
   tiles.pop();
   board.pop();
+ 
   // -1 means empty spot
   board.push(-1);
   
